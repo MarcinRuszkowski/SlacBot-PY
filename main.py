@@ -87,9 +87,9 @@ def handle_form(ack, body, client):
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "source_input",
-                    "placeholder": {"type": "plain_text", "text": "Own work"}
+                    "placeholder": {"type": "plain_text", "text": "https://pl.wikipedia.org/wiki/zdjecie-MCK..."}
                 },
-                "label": {"type": "plain_text", "text": "Źródło obrazu"},
+                "label": {"type": "plain_text", "text": "Żródło obrazu"},
             },
             {
                 "type": "input",
@@ -136,6 +136,10 @@ def handle_submission(ack, body, client):
         # walidacja linka
         if link and not link.startswith("https://"):
             raise ValueError("Link do obrazu musi zaczynać się od 'https://'.")
+
+        # walidacja source
+        if source and not source.startswith("https://"):
+            raise ValueError("Link do źródła obrazu musi zaczynać się od 'https://'.")
 
         # Generowanie opisu
         license_parts = version.split(" ")
