@@ -12,24 +12,24 @@ app = App(
     signing_secret=os.getenv("SLACK_SIGNING_SECRET")
 )
 
-ALLOWED_CHANNEL_ID = "C07USH3PTU4"  # ID kanału
-ALLOWED_TEAM_ID = "T07UAHCJ9NE"  # ID workspace
+ALLOWED_CHANNEL_IDS = ["C07UQQ42SG2", "C07UT9KSY1J"]  # ID kanałów
+ALLOWED_WORKSPACE_IDS = ["T07UA81QNKZ"]  # ID workspace
 
 @app.command("/formularz")
 def handle_form(ack, body, client):
     ack()
 
-    if body["team_id"] != ALLOWED_TEAM_ID:
+    if body["team_id"] not in ALLOWED_WORKSPACE_IDS:
         client.chat_postMessage(
             channel=body["user_id"],
-            text="Ta komenda jest dostępna tylko na workspace TEST."
+            text="Ta komenda jest niedostępna na tym workspace."
         )
         return
 
-    if body["channel_id"] != ALLOWED_CHANNEL_ID and not is_app_generated_channel(body):
+    if body["channel_id"] not in ALLOWED_CHANNEL_IDS and not is_app_generated_channel(body):
         client.chat_postMessage(
             channel=body["user_id"],
-            text="Ta komenda jest dostępna tylko na kanale #formularz lub w aplikacji GenerateString."
+            text="Ta komenda jest niedostępna na tym kanale."
         )
         return
 
@@ -117,16 +117,12 @@ def handle_form(ack, body, client):
     )
 
 def is_app_generated_channel(body):
-    # ID kanału aplikacji
-    return body["channel_id"] == "D07UAJHU2DQ"
-
-
-
+    return body["channel_id"].startswith("D") 
 
 # Obsługa danych z formularza
 @app.view("form_view")
 def handle_submission(ack, body, client):
-    ack()  # Potwierdzenie odbioru
+    ack()
 
     try:
         # Pobieranie wartości z formularza
@@ -148,9 +144,9 @@ def handle_submission(ack, body, client):
         license_link = f"https://creativecommons.org/licenses/{license_type}/{license_version}/"
 
         if version.startswith("2.0"):
-            description = f"{title}/<{link}|{author}>/skuuuuureczki/<{license_link}|{version}>"
+            description = f"{title}/<{link}|{author}>/wiki/<{license_link}|{version}>"
         else:
-            description = f"<{link}|{author}> / wiki / <{license_link}|{version}>"
+            description = f"<{link}|{author}>/wiki/<{license_link}|{version}>"
 
         # Wysłanie wiadomości do użytkownika
         client.chat_postMessage(
@@ -169,7 +165,6 @@ def handle_submission(ack, body, client):
             channel=body["user"]["id"],
             text="Wystąpił nieoczekiwany błąd."
         )
-
 
 
 if __name__ == "__main__":
