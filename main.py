@@ -144,9 +144,9 @@ def handle_submission(ack, body, client):
         license_link = f"https://creativecommons.org/licenses/{license_type}/{license_version}/"
 
         if version.startswith("2.0"):
-            description = f"{title}/<{link}|{author}>/wiki/<{license_link}|{version}>"
+            description = f'<a href="{source}">{title}</a>/<a href="{link}">{author}</a>/wiki/<a href="{license_link}">CC {version}</a>'
         else:
-            description = f"<{link}|{author}>/wiki/<{license_link}|{version}>"
+            description = f'<a href="{link}">{author}</a>/wiki/<a href="{license_link}">CC {version}</a>'
 
         # Wysłanie wiadomości do użytkownika
         client.chat_postMessage(
