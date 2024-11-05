@@ -39,7 +39,7 @@ def handle_form(ack, body, client):
          view={
         "type": "modal",
         "callback_id": "form_view",
-        "title": {"type": "plain_text", "text": "Formularz do linka"},
+        "title": {"type": "plain_text", "text": "Formularz do kodu"},
         "blocks": [
             {
                 "type": "input",
@@ -87,7 +87,7 @@ def handle_form(ack, body, client):
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "source_input",
-                    "placeholder": {"type": "plain_text", "text": "https://pl.wikipedia.org/wiki/zdjecie-MCK..."}
+                    "placeholder": {"type": "plain_text", "text": "wikipedia"}
                 },
                 "label": {"type": "plain_text", "text": "Żródło obrazu"},
             },
@@ -137,9 +137,6 @@ def handle_submission(ack, body, client):
         if link and not link.startswith("https://"):
             raise ValueError("Link do obrazu musi zaczynać się od 'https://'.")
 
-        # walidacja source
-        if source and not source.startswith("https://"):
-            raise ValueError("Link do źródła obrazu musi zaczynać się od 'https://'.")
 
         # Generowanie opisu
         license_parts = version.split(" ")
@@ -148,14 +145,14 @@ def handle_submission(ack, body, client):
         license_link = f"https://creativecommons.org/licenses/{license_type}/{license_version}/"
 
         if version.startswith("2.0"):
-            description = f'<a href="{source}">{title}</a>/<a href="{link}">{author}</a>/wiki/<a href="{license_link}">CC {version}</a>'
+            description = f'<a href="{link}">{title}</a>/{author}/{source}/<a href="{license_link}">CC {version}</a>'
         else:
-            description = f'<a href="{link}">{author}</a>/wiki/<a href="{license_link}">CC {version}</a>'
+            description = f'{author}/{source}/<a href="{license_link}">CC {version}</a>'
 
         # Wysłanie wiadomości do użytkownika
         client.chat_postMessage(
             channel=body["user"]["id"],
-            text=f"Wygenerowany link:\n{description}"
+            text=f"Wygenerowany kod:\n{description}"
         )
     except ValueError as ve:
         # Obsługa błędów walidacji
