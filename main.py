@@ -12,6 +12,14 @@ app = App(
     signing_secret=os.getenv("SLACK_SIGNING_SECRET")
 )
 
+flask_app = Flask(__name__)
+handler = SlackRequestHandler(app)
+
+
+@flask_app.route("/slack/events", methods=["POST"])
+def slack_events():
+    return handler.handle(request)
+
 ALLOWED_CHANNEL_IDS = ["C07UQQ42SG2", "C07UT9KSY1J"]  # ID kanałów
 ALLOWED_WORKSPACE_IDS = ["T07UA81QNKZ"]  # ID workspace
 
@@ -168,12 +176,7 @@ def handle_submission(ack, body, client):
         )
 
 
+
+    
 if __name__ == "__main__":
-    flask_app = Flask(__name__)
-    handler = SlackRequestHandler(app)
-
-    @flask_app.route("/slack/events", methods=["POST"])
-    def slack_events():
-        return handler.handle(request)
-
     flask_app.run(port=3000)
